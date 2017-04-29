@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<meta charset = "UTF-8">
+<html>
+<head>
+
+	<title>别踩白块儿</title>	
+</head>
+
+<body>
+
+<div id = "Background">
+	<canvas id = "GameZone" width = "400" height = "600" style = "border: solid 1px" onclick = "gameProcess()">
+	
+	
+	<script>
+	//绘图所需的数据及数据改变操作
+	class Square
+	{
+		constructor ( column, top1, top2, black )
+		{
+			this. column = column;
+			this. top1 = top1;
+			this. top2 = top2;
+			this. black = black; //布尔型的black属性
+		}
+	}
+	var SquareArr = [];  //存放块的数组
+	var ctx = document. getElementById ( "GameZone" ). getContext ( "2d" );
+	
+	function gameProcess ()
+	{
+		var intervalID = window. setInterval ( draw , 10 )   //setInterval重绘不会阻塞（？）辣！（
+		if ( SquareArr[0]. top1 == 603 )
+		addNewSquares ();
+	}
+	
+	function addNewSquares ()  //加入新块
+	{
+		var LastIndex = SquareArr. length - 1;
+		var column = Math. floor ( Math.random () * 4 );
+		var NewSquare = new Square ( column, 0, 150, true );
+		SquareArr. push ( NewSquare );
+	}
+	
+	
+	//绘图过程
+	function draw ()
+	{
+		ctx. clearRect (0, 0, 400, 600);
+		ctx. beginPath ();
+		ctx. moveTo ( 100, 0 );
+		ctx. lineTo ( 100, 600 );
+		ctx. moveTo ( 200, 0 );
+		ctx. lineTo ( 200, 600 );
+		ctx. moveTo ( 300, 0 );
+		ctx. lineTo ( 300, 600 );
+		ctx. stroke ();	
+		for ( var i = 0; i < SquareArr. length; i++ )
+		{
+			var left1 = ( SquareArr[i]. column ) * 100
+			ctx. beginPath ();
+			if ( SquareArr[i]. black )
+			{
+				ctx. fillStyle = "black";
+				ctx. fillRect ( left1, SquareArr[i]. top1, 100, 150 );
+				ctx. fill ();	
+			}
+			else 
+			{
+				ctx. strokeRect ( left1, SquareArr[i]. top1, 100, 150 );
+				ctx. stroke ();
+			}
+		}
+		for( var i = 0; i < SquareArr. length; i++ )
+		{
+			SquareArr[i]. top1 = SquareArr[i]. top1 + 3   //改变黑块上边的top坐标
+		}
+	}
+	
+	//初始化屏幕上一开始就要有的黑块，下标最小的黑块在游戏区域的最下方
+	function initialize ()
+	{
+		for( var i = 0; i < 4; i++ )
+		{
+			column = Math. floor ( Math.random () * 4 );
+			SquareArr[i] = new Square( column, ( 3 - i ) * 150, ( 4 - i ) * 150, true );
+		}
+	}
+
+
+
+
+	window. onload = function ()
+					{ 
+						initialize ();
+						draw();
+					}
+	</script>
+	
+	
+	</canvas>
+</div>
+
+</body>
+
+</html>
