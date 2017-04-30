@@ -9,7 +9,7 @@
 <body>
 
 <div id = "Background">
-	<canvas id = "GameZone" width = "400" height = "600" style = "border: solid 1px" onclick = "gameProcess()">
+	<canvas id = "GameZone" width = "400" height = "600" style = "border: solid 1px" onclick = "gameProcess()" onclick = "judgeMouseCoord()">
 	
 	
 	<script>
@@ -32,8 +32,22 @@
 	{
 		var LastIndex = SquareArr.length - 1;
 		var column = Math.floor (Math.random () * 4);
-		var NewSquare = new Square (column, 0, true);
+		var NewSquare = new Square (column, -150, true);
 		SquareArr.push (NewSquare);
+	}
+	
+	function judgeMouseCoord(event)
+	{
+		var XCoord = event.offsetX;
+		var YCoord = event.offsetY;
+		for(var i = 0; i < SquareArr.length; i++)
+		{
+			var left1 = (SquareArr[i].column) * 100;
+			if(XCoord > left1 && XCoord < left1 + 100 && YCoord > SquareArr[i].top1 && YCoord < SquareArr[i].top1 + 150)
+			{
+				SquareArr[i].black = false;
+			}
+		}
 	}
 	
 	//绘图过程
@@ -65,11 +79,11 @@
 			}
 		}
 		
-		if(SquareArr[0].top1 == 750)	//数组元素的修改。本来想将控制用函数和绘图用函数分离，但是目前没有想到好方法。于是将数组修改的操作放到了一直被调用的绘图函数中。
+		if(SquareArr[0].top1 == 600)	//数组元素的修改。本来想将控制用函数和绘图用函数分离，但是目前没有想到好方法。于是将数组修改的操作放到了一直被调用的绘图函数中。
 		{								  	
 			SquareArr.shift();
 		}
-		if(SquareArr[0].top1 == 600)
+		if(SquareArr[0].top1 == 450)
 		{
 			addNewSquares();
 		}
