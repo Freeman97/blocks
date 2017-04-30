@@ -13,86 +13,90 @@
 	
 	
 	<script>
-	//绘图所需的数据及数据改变操作
-	class Square
-	{
-		constructor ( column, top1, top2, black )
+		function Square(column, top1, black)	//绘图所需的数据及数据改变操作。某些浏览器不支持用class定义类，直接用function写出构造函数
 		{
-			this. column = column;
-			this. top1 = top1;
-			this. top2 = top2;
-			this. black = black; //布尔型的black属性
+			this.column = column;
+			this.top1 = top1;
+			this.black = black;		//布尔型的black属性
 		}
-	}
-	var SquareArr = [];  //存放块的数组
-	var ctx = document. getElementById ( "GameZone" ). getContext ( "2d" );
 	
-	function gameProcess ()
+	var SquareArr = [];		//存放块的数组
+	var ctx = document.getElementById ("GameZone").getContext ("2d");
+	
+	function gameProcess()
 	{
-		var intervalID = window. setInterval ( draw , 10 )   //setInterval重绘不会阻塞（？）辣！（
-		if ( SquareArr[0]. top1 == 603 )
-		addNewSquares ();
+		var intervalID = window.setInterval (draw ,0.05);	//setInterval重绘不会阻塞（？）辣！（
 	}
 	
-	function addNewSquares ()  //加入新块
+	function addNewSquares()	//加入新块
 	{
-		var LastIndex = SquareArr. length - 1;
-		var column = Math. floor ( Math.random () * 4 );
-		var NewSquare = new Square ( column, 0, 150, true );
-		SquareArr. push ( NewSquare );
+		var LastIndex = SquareArr.length - 1;
+		var column = Math.floor (Math.random () * 4);
+		var NewSquare = new Square (column, 0, true);
+		SquareArr.push (NewSquare);
 	}
-	
 	
 	//绘图过程
-	function draw ()
+	function draw()
 	{
-		ctx. clearRect (0, 0, 400, 600);
-		ctx. beginPath ();
-		ctx. moveTo ( 100, 0 );
-		ctx. lineTo ( 100, 600 );
-		ctx. moveTo ( 200, 0 );
-		ctx. lineTo ( 200, 600 );
-		ctx. moveTo ( 300, 0 );
-		ctx. lineTo ( 300, 600 );
-		ctx. stroke ();	
-		for ( var i = 0; i < SquareArr. length; i++ )
+		ctx.clearRect(0, 0, 400, 600);
+		ctx.beginPath();
+		ctx.moveTo(100, 0);
+		ctx.lineTo(100, 600);
+		ctx.moveTo(200, 0);
+		ctx.lineTo(200, 600);
+		ctx.moveTo(300, 0);
+		ctx.lineTo(300, 600);
+		ctx.stroke();	
+		for(var i = 0; i < SquareArr.length; i++)
 		{
-			var left1 = ( SquareArr[i]. column ) * 100
-			ctx. beginPath ();
-			if ( SquareArr[i]. black )
+			var left1 = (SquareArr[i].column) * 100;
+			ctx.beginPath();
+			if(SquareArr[i].black)
 			{
-				ctx. fillStyle = "black";
-				ctx. fillRect ( left1, SquareArr[i]. top1, 100, 150 );
-				ctx. fill ();	
+				ctx.fillStyle = "black";
+				ctx.fillRect(left1, SquareArr[i].top1, 100, 150);
+				ctx.fill();	
 			}
 			else 
 			{
-				ctx. strokeRect ( left1, SquareArr[i]. top1, 100, 150 );
-				ctx. stroke ();
+				ctx.strokeRect(left1, SquareArr[i].top1, 100, 150);
+				ctx.stroke();
 			}
 		}
-		for( var i = 0; i < SquareArr. length; i++ )
-		{
-			SquareArr[i]. top1 = SquareArr[i]. top1 + 3   //改变黑块上边的top坐标
+		
+		if(SquareArr[0].top1 == 750)	//数组元素的修改。本来想将控制用函数和绘图用函数分离，但是目前没有想到好方法。于是将数组修改的操作放到了一直被调用的绘图函数中。
+		{								  	
+			SquareArr.shift();
 		}
+		if(SquareArr[0].top1 == 600)
+		{
+			addNewSquares();
+		}
+		console.log(SquareArr[0], SquareArr[1], SquareArr[2], SquareArr[3], SquareArr[4])
+		for(var i = 0; i < SquareArr.length; i++)
+		{
+			SquareArr[i].top1 = SquareArr[i].top1 + 1;		//改变黑块上边的top坐标
+		}
+		
 	}
 	
 	//初始化屏幕上一开始就要有的黑块，下标最小的黑块在游戏区域的最下方
-	function initialize ()
+	function initialize()
 	{
-		for( var i = 0; i < 4; i++ )
+		for(var i = 0; i < 4; i++)
 		{
-			column = Math. floor ( Math.random () * 4 );
-			SquareArr[i] = new Square( column, ( 3 - i ) * 150, ( 4 - i ) * 150, true );
+			column = Math.floor(Math.random () * 4);
+			SquareArr[i] = new Square(column, ( 3 - i ) * 150, true);
 		}
 	}
 
 
 
 
-	window. onload = function ()
+	window.onload = function()
 					{ 
-						initialize ();
+						initialize();
 						draw();
 					}
 	</script>
