@@ -9,7 +9,7 @@
 <body>
 
 <div id = "Background">
-	<canvas id = "GameZone" width = "400" height = "600" style = "border: solid 1px" onclick = "gameProcess()" onclick = "judgeMouseCoord()">
+	<canvas id = "GameZone" width = "400" height = "600" style = "border: solid 1px" onclick = "getMousePos()">
 	
 	
 	<script>
@@ -22,6 +22,7 @@
 	
 	var SquareArr = [];		//存放块的数组
 	var ctx = document.getElementById ("GameZone").getContext ("2d");
+	//var event = window.event;
 	
 	function gameProcess()
 	{
@@ -36,10 +37,27 @@
 		SquareArr.push (NewSquare);
 	}
 	
-	function judgeMouseCoord(event)
+	function getMousePos(event) {
+            var e = event || window.event;
+            console.log(e.offsetX, e.offsetY)
+			var XCoord = e.offsetX;
+			var YCoord = e.offsetY;
+			for(var i = 0; i < SquareArr.length; i++)
+			{
+				var left1 = (SquareArr[i].column) * 100;
+				if(XCoord > left1 && XCoord < left1 + 100 && YCoord > SquareArr[i].top1 && YCoord < SquareArr[i].top1 + 150)
+				{
+					SquareArr[i].black = false;
+				}
+			}
+			
+        }
+		
+	/*function judgeMouseCoord()
 	{
-		var XCoord = event.offsetX;
-		var YCoord = event.offsetY;
+		var XCoord = MouseEvent.offsetX;
+		var YCoord = MouseEvent.offsetY;
+		console.log(XCoord, YCoord);
 		for(var i = 0; i < SquareArr.length; i++)
 		{
 			var left1 = (SquareArr[i].column) * 100;
@@ -48,7 +66,7 @@
 				SquareArr[i].black = false;
 			}
 		}
-	}
+	}*/
 	
 	//绘图过程
 	function draw()
@@ -87,7 +105,7 @@
 		{
 			addNewSquares();
 		}
-		console.log(SquareArr[0], SquareArr[1], SquareArr[2], SquareArr[3], SquareArr[4])
+		//console.log(SquareArr[0], SquareArr[1], SquareArr[2], SquareArr[3], SquareArr[4])
 		for(var i = 0; i < SquareArr.length; i++)
 		{
 			SquareArr[i].top1 = SquareArr[i].top1 + 1;		//改变黑块上边的top坐标
