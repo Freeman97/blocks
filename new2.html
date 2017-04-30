@@ -47,10 +47,22 @@
 				var left1 = (SquareArr[i].column) * 100;
 				if(XCoord > left1 && XCoord < left1 + 100 && YCoord > SquareArr[i].top1 && YCoord < SquareArr[i].top1 + 150)
 				{
-					SquareArr[i].black = false;
+					//if(SquareArr[i].black)
+					//{
+						SquareArr[i].black = false;
+					//}
+			/*		else
+					{
+						alert("踩到白块辣！");
+						clearInterval(intervalID);
+					}
 				}
+				else 
+				{
+					alert("踩到白块啦！")
+					clearInterval(intervalID);
+				}*/
 			}
-			
         }
 		
 	/*function judgeMouseCoord()
@@ -110,7 +122,6 @@
 		{
 			SquareArr[i].top1 = SquareArr[i].top1 + 1;		//改变黑块上边的top坐标
 		}
-		
 	}
 	
 	//初始化屏幕上一开始就要有的黑块，下标最小的黑块在游戏区域的最下方
@@ -130,6 +141,7 @@
 					{ 
 						initialize();
 						draw();
+						gameProcess();
 					}
 	</script>
 	
