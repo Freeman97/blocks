@@ -22,11 +22,12 @@
 	
 	var SquareArr = [];		//存放块的数组
 	var ctx = document.getElementById ("GameZone").getContext ("2d");
+	var intervalID;
 	//var event = window.event;
 	
 	function gameProcess()
 	{
-		var intervalID = window.setInterval (draw ,0.05);	//setInterval重绘不会阻塞（？）辣！（
+		intervalID = window.setInterval (draw ,0.05);	//setInterval重绘不会阻塞（？）辣！（
 	}
 	
 	function addNewSquares()	//加入新块
@@ -37,33 +38,43 @@
 		SquareArr.push (NewSquare);
 	}
 	
-	function getMousePos(event) {
-            var e = event || window.event;
-            console.log(e.offsetX, e.offsetY)
-			var XCoord = e.offsetX;
-			var YCoord = e.offsetY;
-			for(var i = 0; i < SquareArr.length; i++)
+	function getMousePos(event) 
+	{
+        var e = event || window.event;
+		var XCoord = e.offsetX;
+		var YCoord = e.offsetY;
+		var judge = true;
+		for(var i = 0; i < SquareArr.length; i++)
+		{
+			var left1 = (SquareArr[i].column) * 100;
+			if(XCoord > left1 && XCoord < left1 + 100 && YCoord > SquareArr[i].top1 && YCoord < SquareArr[i].top1 + 150)
 			{
-				var left1 = (SquareArr[i].column) * 100;
-				if(XCoord > left1 && XCoord < left1 + 100 && YCoord > SquareArr[i].top1 && YCoord < SquareArr[i].top1 + 150)
+				if(SquareArr[i].black)
 				{
-					//if(SquareArr[i].black)
-					//{
-						SquareArr[i].black = false;
-					//}
-			/*		else
-					{
-						alert("踩到白块辣！");
-						clearInterval(intervalID);
-					}
+					SquareArr[i].black = false;
+					judge = false;
+					console.log(judge);
 				}
-				else 
+				else
 				{
-					alert("踩到白块啦！")
+					alert("踩到白块辣！");
 					clearInterval(intervalID);
-				}*/
-			}
-        }
+					judge = false;
+				}
+			}	
+		}
+		if(judge)
+		{
+			alert("踩到白块啦！");
+			console.log(judge);
+			clearInterval(intervalID);
+		}
+    }
+	
+	/*判定流程的构想：
+		是否踩到了“Square”？-Y->Square的black属性是否为true？-Y->将black改为false，游戏继续
+															  -N->游戏结束
+							-N->游戏结束
 		
 	/*function judgeMouseCoord()
 	{
@@ -121,6 +132,11 @@
 		for(var i = 0; i < SquareArr.length; i++)
 		{
 			SquareArr[i].top1 = SquareArr[i].top1 + 1;		//改变黑块上边的top坐标
+			if(SquareArr[i].top1 >= 599 && SquareArr[i].black)
+			{
+				alert("黑块漏啦！");
+				clearInterval(intervalID);
+			}
 		}
 	}
 	
