@@ -3,31 +3,17 @@
 <html>
 <head>
 	<title>别踩白块儿</title>
-	<style>
-	@media (min-width: 320px) and (max-width: 420px)
-	{
-		#Background
-		{
-			width: 320px;
-			height: 480px;
-		}
-	}
-	
-	@media (min-width: 768px) and (max-width: 1080px)
-	{
-		#Background
-		{
-			width: 768px;
-			height: 1152px;
-		}
-	}
-	</style>
 </head>
 
 <body>
-
-<div id = "Background">
-	<canvas id = "GameZone" width = "400" height = "600" style = "border: solid 1px" onclick = "getMousePos()">	
+	<div id = "Background">
+		<canvas id = "GameZone" style = "border: solid 1px;" onclick = "getMousePos()">	
+		
+		</canvas>
+		<p id = "Notice">请点击第一个黑块以开始游戏!</p>
+		<p id = "Score">当前分数：0      最高分数：0</p>
+		<button id = "restart" disabled = "true" onclick = "initialize()">重新开始</button>
+	</div>
 	<script>
 		function Square(column, top1, black)	//绘图所需的数据及数据改变操作。某些浏览器不支持用class定义类，直接用function写出构造函数
 		{
@@ -35,7 +21,28 @@
 			this.top1 = top1;
 			this.black = black;		//布尔型的black属性
 		}
-	
+		
+		var width = window.innerWidth * 0.9;
+		var height = window.innerHeight * 0.9;
+		
+		function mobile()
+		{
+			if(width >= height)
+			{
+				document.getElementById("GameZone").setAttribute("height", height);
+				document.getElementById("GameZone").setAttribute("width", height * 2 / 3);
+			}
+			else 
+			{
+				document.getElementById("GameZone").setAttribute("width", width);
+				document.getElementById("GameZone").setAttribute("height", width * 3 / 2);
+			}
+			xUnit = document.getElementById("GameZone").offsetWidth/4;
+		    yUnit = document.getElementById("GameZone").offsetHeight/4;
+		}
+
+		var xUnit;
+		var yUnit;
 		var SquareArr = [];		//存放块的数组
 		var ctx = document.getElementById("GameZone").getContext("2d");
 		var intervalID;
@@ -45,14 +52,13 @@
 		
 		function gameProcess()
 		{
-			intervalID = window.setInterval(draw ,0.05);	//setInterval重绘不会阻塞（？）辣！（
+			intervalID = window.setInterval(draw, 0.05);	//setInterval重绘不会阻塞（？）辣！（
 		}
 		
 		function addNewSquares()	//加入新块
 		{
-			var LastIndex = SquareArr.length - 1;
 			var column = Math.floor(Math.random () * 4);
-			var NewSquare = new Square(column, -150, true);
+			var NewSquare = new Square(column, -yUnit, true);
 			SquareArr.push(NewSquare);
 		}
 		
@@ -69,8 +75,9 @@
 			var judge = true;
 			for(var i = 0; i < SquareArr.length; i++)
 			{
-				var left1 = (SquareArr[i].column) * 100;
-				if(XCoord > left1 && XCoord < left1 + 100 && YCoord > SquareArr[i].top1 && YCoord < SquareArr[i].top1 + 150)
+				
+				var left1 = (SquareArr[i].column) * xUnit;
+				if(XCoord > left1 && XCoord < left1 + xUnit && YCoord > SquareArr[i].top1 && YCoord < SquareArr[i].top1 + yUnit)
 				{
 					if(SquareArr[i].black)
 					{
@@ -109,45 +116,45 @@
 		//绘图过程
 		function draw()
 		{
-			ctx.clearRect(0, 0, 400, 600);
+			ctx.clearRect(0, 0, 4 * xUnit, 4 * yUnit);
 			ctx.beginPath();
-			ctx.moveTo(100, 0);
-			ctx.lineTo(100, 600);
-			ctx.moveTo(200, 0);
-			ctx.lineTo(200, 600);
-			ctx.moveTo(300, 0);
-			ctx.lineTo(300, 600);
+			ctx.moveTo(xUnit, 0);
+			ctx.lineTo(xUnit, 4 * yUnit);
+			ctx.moveTo(2 * xUnit, 0);
+			ctx.lineTo(2 * xUnit, 4 * yUnit);
+			ctx.moveTo(3 * xUnit, 0);
+			ctx.lineTo(3 * xUnit, 4 * yUnit);
 			ctx.stroke();	
 			for(var i = 0; i < SquareArr.length; i++)
 			{
-				var left1 = (SquareArr[i].column) * 100;
+				var left1 = (SquareArr[i].column) * xUnit;
 				ctx.beginPath();
 				if(SquareArr[i].black)
 				{
 					ctx.fillStyle = "black";
-					ctx.fillRect(left1, SquareArr[i].top1, 100, 150);
+					ctx.fillRect(left1, SquareArr[i].top1, xUnit, yUnit);
 					ctx.fill();	
 				}
 				else 
 				{
-					ctx.strokeRect(left1, SquareArr[i].top1, 100, 150);
+					ctx.strokeRect(left1, SquareArr[i].top1, xUnit, yUnit);
 					ctx.stroke();
 				}
 			}
 			if(!_1stclkcheck)
 			{
-				if(SquareArr[0].top1 == 600)	//数组元素的修改。本来想将控制用函数和绘图用函数分离，但是目前没有想到好方法。于是将数组修改的操作放到了一直被调用的绘图函数中。
+				if(SquareArr[0].top1 >= 4 * yUnit)	//数组元素的修改。本来想将控制用函数和绘图用函数分离，但是目前没有想到好方法。于是将数组修改的操作放到了一直被调用的绘图函数中。
 				{								  	
 					SquareArr.shift();
 				}
-				if(SquareArr[0].top1 == 450)
+				if(SquareArr.length < 5)
 				{
 					addNewSquares();
 				}
 				for(var i = 0; i < SquareArr.length; i++)
 				{
 					SquareArr[i].top1 = SquareArr[i].top1 + 1;			//改变黑块上边的top坐标
-					if(SquareArr[i].top1 >= 600 && SquareArr[i].black)
+					if(SquareArr[i].top1 >= 4 * yUnit && SquareArr[i].black)
 					{
 						document.getElementById ("Notice").innerHTML = "黑块漏啦！单击游戏区域以重新开始游戏";
 						clearInterval(intervalID);
@@ -160,31 +167,28 @@
 		//初始化屏幕上一开始就要有的黑块，下标最小的黑块在游戏区域的最下方
 		function initialize()
 		{
+			currentScore = 0;
 			SquareArr = [];
 			document.getElementById("Notice").innerHTML = "请点击第一个黑块以开始游戏!";
 			document.getElementById("restart").setAttribute("disabled", "true");
 			_1stclkcheck = true;
-			currentScore = 0;
-			ctx.clearRect(0, 0, 400, 600);
+			document.getElementById("Score").innerHTML = "当前分数：" + currentScore + "      最高分数：" + hiScore;
+			ctx.clearRect(0, 0, 4 * xUnit, 4 * yUnit);
 			for(var i = 0; i < 4; i++)
 			{
 				column = Math.floor(Math.random () * 4);
-				SquareArr[i] = new Square(column, (3 - i) * 150, true);
+				SquareArr[i] = new Square(column, (3 - i) * yUnit, true);
 			}
 			gameProcess();
 		}
 		
 		window.onload = function()
-						{ 
+						{
+							mobile();
 							initialize();
-							draw();
+							draw();	
 						}
 	</script>
-	</canvas>
-	<p id = "Notice">请点击第一个黑块以开始游戏!</p>
-	<p id = "Score">当前分数：0      最高分数：0</p>
-	<button id = "restart" disabled = "true" onclick = "initialize()">重新开始</button>
-</div>
 </body>
 
 </html>
