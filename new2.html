@@ -7,15 +7,14 @@
 
 <body>
 	<div id="Background">
-		<canvas id="GameZone" style="border: solid 1px" onclick="getMousePos()">	
-		
-		</canvas>
-		<p id="Notice">请点击第一个黑块以开始游戏!</p>
-		<p id="Score">当前分数：0      最高分数：0</p>
-		<button id="restart" disabled ="true" onclick="initialize()">重新开始</button>
-		<div id="cover" style="position: absolute; display: none"> <!-- cover作为挡板，在游戏结束后阻止玩家继续点击屏幕 -->
-	</div>
-	<script>
+		<canvas id="GameZone" style="border: solid 1px" onclick="getMousePos()"></canvas>
+		<div id="records">
+			<p id="Notice">请点击第一个黑块以开始游戏!</p>
+			<p id="Score">当前分数：0      最高分数：0</p>
+			<button id="restart" disabled ="true" onclick="initialize()">重新开始</button>
+		</div>
+		<div id="cover" style="position: absolute; display: none"></div> <!-- cover作为挡板，在游戏结束后阻止玩家继续点击屏幕 -->
+		<script>
 		function Square(column, top1, black)	//绘图所需的数据及数据改变操作。某些浏览器不支持用class定义类，直接用function写出构造函数
 		{
 			this.column = column;
@@ -25,6 +24,14 @@
 		
 		var width = window.innerWidth;
 		var height = window.innerHeight;
+		var xUnit;
+		var yUnit;
+		var SquareArr = [];		//存放块的数组
+		var ctx = document.getElementById("GameZone").getContext("2d");
+		var intervalID;
+		var _1stclkcheck = true;
+		var currentScore = 0;
+		var hiScore = 0;
 		
 		function mobile()
 		{
@@ -38,6 +45,7 @@
 				document.getElementById("cover").style.width = height * 2 * 0.9 / 3 + "px";
 				document.getElementById("cover").style.marginLeft = 0.5 * width - height * 0.9 / 3 + "px";
 				document.getElementById("cover").style.top = a + "px";
+				document.getElementById("records").style.marginLeft = 0.5 * width - height * 0.9 / 3 + "px";
 			}
 			else 
 			{
@@ -48,20 +56,12 @@
 				document.getElementById("cover").style.height = width * 3 * 0.9 / 2 + "px";
 				document.getElementById("cover").style.marginLeft =  0.05 * width + "px";
 				document.getElementById("cover").style.top = a + "px";
+				document.getElementById("records").style.marginLeft = 0.5 * width - height * 0.9 / 3 + "px";
 			}
 			xUnit = document.getElementById("GameZone").offsetWidth/4;
 		    yUnit = document.getElementById("GameZone").offsetHeight/4;
 		}
 
-		var xUnit;
-		var yUnit;
-		var SquareArr = [];		//存放块的数组
-		var ctx = document.getElementById("GameZone").getContext("2d");
-		var intervalID;
-		var _1stclkcheck = true;
-		var currentScore = 0;
-		var hiScore = 0;
-		
 		function gameProcess()
 		{
 			intervalID = window.setInterval(draw, 0.05);	//setInterval重绘不会阻塞（？）辣！（
@@ -181,6 +181,7 @@
 		//初始化屏幕上一开始就要有的黑块，下标最小的黑块在游戏区域的最下方
 		function initialize()
 		{
+			document.getElementById("cover").style.display = "none";
 			currentScore = 0;
 			SquareArr = [];
 			document.getElementById("Notice").innerHTML = "请点击第一个黑块以开始游戏!";
@@ -202,7 +203,7 @@
 							initialize();
 							draw();	
 						}
-	</script>
+		</script>
 </body>
 
 </html>
