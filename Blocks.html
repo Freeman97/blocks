@@ -175,7 +175,7 @@
 				for(var i = 0; i < SquareArr.length; i++)
 				{
 					SquareArr[i].top1 = SquareArr[i].top1 + 10 * height2 / 600;			//改变黑块上边的top坐标
-					if(SquareArr[i].top1 >= 5 * yUnit && SquareArr[i].black)
+					if(SquareArr[i].top1 >= 4 * yUnit && SquareArr[i].black)
 					{
 						document.getElementById("Notice").innerHTML = "黑块漏啦！单击按钮以重新开始游戏";
 						clearInterval(intervalID);
