@@ -2,7 +2,7 @@
 <meta charset = "UTF-8">
 <html>
 <head>
-	<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" name="viewport" />
+	<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
 	<title>别踩白块儿</title>
 </head>
 
@@ -16,6 +16,14 @@
 			<div style="width: 100%; text-align: center; margin-top: 50%;">
 				<p id="Score" style="font-weight: bold;">本局分数：0      最高分数：0</p>
 				<button id="restart" disabled ="true" onclick="initialize()">重新开始</button>
+				<button id="modeselect" onclick="modeselect()">选择模式</button>
+			</div>
+		</div>
+		<div id="cover2" style="position: absolute; display: block; background-color: rgba(255, 255, 255, 0.9);">
+			<div style="width: 100%; text-align: center; margin-top: 50%;">
+				<p>欢迎游玩！请选择一个模式。</p>
+				<button id="normalmode" onclick="m1Select()">普通模式</button>
+				<button id="speedup" onclick="m2Select()">加速模式</button>
 			</div>
 		</div>
 		<script>
@@ -35,9 +43,12 @@
 		var intervalID;
 		var _1stclkcheck = true;
 		var currentScore = 0;
-		var hiScore = 0;
+		var hiScore1 = 0;
+		var hiScore2 = 0;
 		var height2 = 0;
-		
+		var mode2 = false;
+		var speed = 0;
+	
 		function mobile()
 		{
 			var a = document.getElementById("GameZone").offsetTop;
@@ -51,6 +62,10 @@
 				document.getElementById("cover").style.width = height * 2 * 0.9 / 3 + "px";
 				document.getElementById("cover").style.marginLeft = 0.5 * width - height * 0.9 / 3 + "px";
 				document.getElementById("cover").style.top = a + "px";
+				document.getElementById("cover2").style.height = height * 0.9 + "px";
+				document.getElementById("cover2").style.width = height * 2 * 0.9 / 3 + "px";
+				document.getElementById("cover2").style.marginLeft = 0.5 * width - height * 0.9 / 3 + "px";
+				document.getElementById("cover2").style.top = a + "px";
 				document.getElementById("records").style.marginLeft = 0.5 * width - height * 0.9 / 3 + "px";
 			}
 			else 
@@ -63,15 +78,39 @@
 				document.getElementById("cover").style.height = width * 3 * 0.9 / 2 + "px";
 				document.getElementById("cover").style.marginLeft = 0.05 * width + "px";
 				document.getElementById("cover").style.top = a + "px";
+				document.getElementById("cover2").style.width = width * 0.9 + "px";
+				document.getElementById("cover2").style.height = width * 3 * 0.9 / 2 + "px";
+				document.getElementById("cover2").style.marginLeft = 0.05 * width + "px";
+				document.getElementById("cover2").style.top = a + "px";
 				document.getElementById("records").style.marginLeft = 0.5 * width - height * 0.9 / 3 + "px";
 			}
 			xUnit = document.getElementById("GameZone").offsetWidth / 4;
 		    yUnit = document.getElementById("GameZone").offsetHeight / 4;
+			speed = height2 / 100;
 		}
-
+		
 		function gameProcess()
 		{
 			intervalID = window.setInterval(draw, 1000 / 40);	//setInterval重绘不会阻塞（？）辣！（
+		}
+		
+		function modeselect()
+		{
+			initialize();
+			document.getElementById("cover").style.display = "none";
+			document.getElementById("cover2").style.display = "block";
+		}
+		
+		function m2Select()
+		{
+			mode2 = true;
+			document.getElementById("cover2").style.display = "none";
+		}
+		
+		function m1Select()
+		{
+			mode2 = false;
+			document.getElementById("cover2").style.display = "none";
 		}
 		
 		function addNewSquares()	//加入新块
@@ -103,11 +142,20 @@
 						SquareArr[i].black = false;
 						judge = false;
 						currentScore = currentScore + 1;
-						if(currentScore >= hiScore)
+						if(mode2)
 						{
-							hiScore = currentScore;
+							if(currentScore >= hiScore2)
+							{
+								hiScore2 = currentScore;
+							}
 						}
-						document.getElementById("Score").innerHTML = "当前分数：" + currentScore + "      最高分数：" + hiScore;
+						else
+						{
+							if(currentScore >= hiScore1)
+							{
+								hiScore1 = currentScore;
+							}
+						}
 					}
 					else
 					{
@@ -116,8 +164,16 @@
 						judge = false;
 						document.getElementById("restart").removeAttribute("disabled");
 						document.getElementById("cover").style.display = "block";
+						if(mode2)
+						{
+							document.getElementById("Score").innerHTML = "当前模式本局分数：" + currentScore + "      最高分数：" + hiScore2;
+						}
+						else
+						{
+							document.getElementById("Score").innerHTML = "当前模式本局分数：" + currentScore + "      最高分数：" + hiScore1;
+						}
 					}
-				}	
+				}
 			}
 			if(judge)
 			{
@@ -125,6 +181,14 @@
 				clearInterval(intervalID);
 				document.getElementById("restart").removeAttribute("disabled");
 				document.getElementById("cover").style.display = "block";
+				if(mode2)
+				{
+					document.getElementById("Score").innerHTML = "当前模式本局分数：" + currentScore + "      最高分数：" + hiScore2;
+				}
+				else
+				{
+					document.getElementById("Score").innerHTML = "当前模式本局分数：" + currentScore + "      最高分数：" + hiScore1;
+				}
 			}
 		}
 		
@@ -174,28 +238,41 @@
 				}
 				for(var i = 0; i < SquareArr.length; i++)
 				{
-					SquareArr[i].top1 = SquareArr[i].top1 + 10 * height2 / 600;			//改变黑块上边的top坐标
+					SquareArr[i].top1 = SquareArr[i].top1 + speed;					//改变黑块上边的top坐标
+					if(mode2)
+					{
+						speed = speed + 0.005;
+					}
 					if(SquareArr[i].top1 >= 4 * yUnit && SquareArr[i].black)
 					{
 						document.getElementById("Notice").innerHTML = "黑块漏啦！单击按钮以重新开始游戏";
+						console.log(mode2,speed);
 						clearInterval(intervalID);
 						document.getElementById("restart").removeAttribute("disabled");
 						document.getElementById("cover").style.display = "block";
+						if(mode2)
+						{
+							document.getElementById("Score").innerHTML = "当前模式本局分数：" + currentScore + "      最高分数：" + hiScore2;
+						}
+						else
+						{
+							document.getElementById("Score").innerHTML = "当前模式本局分数：" + currentScore + "      最高分数：" + hiScore1;
+						}
 					}
 				}
-			}		
+			}
 		}
 	
 		//初始化屏幕上一开始就要有的黑块，下标最小的黑块在游戏区域的最下方
 		function initialize()
 		{
+			speed = 10 * height2 / 600;
 			document.getElementById("cover").style.display = "none";
 			currentScore = 0;
 			SquareArr = [];
 			document.getElementById("Notice").innerHTML = "请点击第一个黑块以开始游戏!";
 			document.getElementById("restart").setAttribute("disabled", "true");
 			_1stclkcheck = true;
-			document.getElementById("Score").innerHTML = "当前分数：" + currentScore + "      最高分数：" + hiScore;
 			ctx.clearRect(0, 0, 4 * xUnit, 4 * yUnit);
 			for(var i = 0; i < 4; i++)
 			{
@@ -212,6 +289,6 @@
 			draw();	
 		}
 		</script>
+	</div>
 </body>
-
 </html>
