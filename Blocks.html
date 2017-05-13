@@ -2,6 +2,7 @@
 <meta charset = "UTF-8">
 <html>
 <head>
+	<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" name="viewport" />
 	<title>别踩白块儿</title>
 </head>
 
@@ -10,10 +11,13 @@
 		<canvas id="GameZone" style="border: solid 1px" onclick="getMousePos()"></canvas>
 		<div id="records">
 			<p id="Notice">请点击第一个黑块以开始游戏!</p>
-			<p id="Score">当前分数：0      最高分数：0</p>
-			<button id="restart" disabled ="true" onclick="initialize()">重新开始</button>
 		</div>
-		<div id="cover" style="position: absolute; display: none"></div> <!-- cover作为挡板，在游戏结束后阻止玩家继续点击屏幕 -->
+		<div id="cover" style="position: absolute; display: none; background-color: rgba(255, 255, 255, 0.9);">		<!-- cover作为挡板，在游戏结束后阻止玩家继续点击屏幕 -->
+			<div style="width: 100%; text-align: center; margin-top: 50%;">
+				<p id="Score" style="font-weight: bold;">本局分数：0      最高分数：0</p>
+				<button id="restart" disabled ="true" onclick="initialize()">重新开始</button>
+			</div>
+		</div>
 		<script>
 		function Square(column, top1, black)	//绘图所需的数据及数据改变操作。某些浏览器不支持用class定义类，直接用function写出构造函数
 		{
@@ -32,6 +36,7 @@
 		var _1stclkcheck = true;
 		var currentScore = 0;
 		var hiScore = 0;
+		var height2 = 0;
 		
 		function mobile()
 		{
@@ -41,6 +46,7 @@
 				document.getElementById("GameZone").setAttribute("height", height * 0.9);
 				document.getElementById("GameZone").setAttribute("width", height * 2 * 0.9 / 3);
 				document.getElementById("GameZone").style.marginLeft = 0.5 * width - height * 0.9 / 3 + "px";
+				height2 = height * 0.9;
 				document.getElementById("cover").style.height = height * 0.9 + "px";
 				document.getElementById("cover").style.width = height * 2 * 0.9 / 3 + "px";
 				document.getElementById("cover").style.marginLeft = 0.5 * width - height * 0.9 / 3 + "px";
@@ -51,25 +57,26 @@
 			{
 				document.getElementById("GameZone").setAttribute("width", width * 0.9);
 				document.getElementById("GameZone").setAttribute("height", width * 3 * 0.9 / 2);
-				document.getElementById("GameZone").style.marginLeft =  0.05 * width + "px";
+				document.getElementById("GameZone").style.marginLeft = 0.05 * width + "px";
+				height2 = width * 3 * 0.9 / 2;
 				document.getElementById("cover").style.width = width * 0.9 + "px";
 				document.getElementById("cover").style.height = width * 3 * 0.9 / 2 + "px";
-				document.getElementById("cover").style.marginLeft =  0.05 * width + "px";
+				document.getElementById("cover").style.marginLeft = 0.05 * width + "px";
 				document.getElementById("cover").style.top = a + "px";
 				document.getElementById("records").style.marginLeft = 0.5 * width - height * 0.9 / 3 + "px";
 			}
-			xUnit = document.getElementById("GameZone").offsetWidth/4;
-		    yUnit = document.getElementById("GameZone").offsetHeight/4;
+			xUnit = document.getElementById("GameZone").offsetWidth / 4;
+		    yUnit = document.getElementById("GameZone").offsetHeight / 4;
 		}
 
 		function gameProcess()
 		{
-			intervalID = window.setInterval(draw, 0.05);	//setInterval重绘不会阻塞（？）辣！（
+			intervalID = window.setInterval(draw, 1000 / 40);	//setInterval重绘不会阻塞（？）辣！（
 		}
 		
 		function addNewSquares()	//加入新块
 		{
-			var column = Math.floor(Math.random () * 4);
+			var column = Math.floor(Math.random() * 4);
 			var NewSquare = new Square(column, -yUnit, true);
 			SquareArr.push(NewSquare);
 		}
@@ -81,7 +88,7 @@
 				_1stclkcheck = false;
 				document.getElementById("Notice").innerHTML = "请注意不要踩到白块哦";
 			}
-			var e = event || window.event;
+			var e = event || window.event;	//event || window.event的写法是考虑到浏览器兼容性问题
 			var XCoord = e.offsetX;
 			var YCoord = e.offsetY;
 			var judge = true;
@@ -104,7 +111,7 @@
 					}
 					else
 					{
-						document.getElementById("Notice").innerHTML = "踩到白块啦！单击游戏区域以重新开始游戏";
+						document.getElementById("Notice").innerHTML = "踩到白块啦！单击按钮以重新开始游戏";
 						clearInterval(intervalID);
 						judge = false;
 						document.getElementById("restart").removeAttribute("disabled");
@@ -114,9 +121,10 @@
 			}
 			if(judge)
 			{
-				document.getElementById("Notice").innerHTML = "踩到白块啦！单击游戏区域以重新开始游戏";
+				document.getElementById("Notice").innerHTML = "踩到白块啦！单击按钮以重新开始游戏";
 				clearInterval(intervalID);
 				document.getElementById("restart").removeAttribute("disabled");
+				document.getElementById("cover").style.display = "block";
 			}
 		}
 		
@@ -166,10 +174,10 @@
 				}
 				for(var i = 0; i < SquareArr.length; i++)
 				{
-					SquareArr[i].top1 = SquareArr[i].top1 + 1;			//改变黑块上边的top坐标
-					if(SquareArr[i].top1 >= 4 * yUnit && SquareArr[i].black)
+					SquareArr[i].top1 = SquareArr[i].top1 + 10 * height2 / 600;			//改变黑块上边的top坐标
+					if(SquareArr[i].top1 >= 5 * yUnit && SquareArr[i].black)
 					{
-						document.getElementById ("Notice").innerHTML = "黑块漏啦！单击游戏区域以重新开始游戏";
+						document.getElementById("Notice").innerHTML = "黑块漏啦！单击按钮以重新开始游戏";
 						clearInterval(intervalID);
 						document.getElementById("restart").removeAttribute("disabled");
 						document.getElementById("cover").style.display = "block";
@@ -191,18 +199,18 @@
 			ctx.clearRect(0, 0, 4 * xUnit, 4 * yUnit);
 			for(var i = 0; i < 4; i++)
 			{
-				column = Math.floor(Math.random () * 4);
+				column = Math.floor(Math.random() * 4);
 				SquareArr[i] = new Square(column, (3 - i) * yUnit, true);
 			}
 			gameProcess();
 		}
 		
 		window.onload = function()
-						{
-							mobile();
-							initialize();
-							draw();	
-						}
+		{
+			mobile();
+			initialize();
+			draw();	
+		}
 		</script>
 </body>
 
