@@ -112,6 +112,10 @@
 			sound[5].src = "sound/Gb4.mp3";
 			sound[6] = document.createElement("audio");
 			sound[6].src = "sound/Eb5.mp3";
+			for(var i = 0; i < 7; i++)
+			{
+				sound[i].preload = auto;
+			}
 		}
 		
 		function gameProcess()
