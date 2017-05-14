@@ -24,7 +24,7 @@
 				<p>欢迎游玩！请选择一个模式。</p>
 				<button id="normalmode" onclick="m1Select()">普通模式</button>
 				<button id="speedup" onclick="m2Select()">加速模式</button>
-				<button id="gravity" onclick="m3select()">重力模式</button>
+				<button id="gravity" onclick="m3select()">GravityWars</button>
 			</div>
 		</div>
 		<script>
@@ -33,6 +33,7 @@
 			this.column = column;
 			this.top1 = top1;
 			this.black = black;		//布尔型的black属性
+			this.velocity = 0;
 		}
 		
 		var width = window.innerWidth;
@@ -46,10 +47,14 @@
 		var currentScore = 0;
 		var hiScore1 = 0;
 		var hiScore2 = 0;
+		var hiScore3 = 0;
 		var height2 = 0;
+		var mode1 = false;
 		var mode2 = false;
+		var mode3 = false;
 		var speed = 0;
 		var sound = [];
+		var soundindex = 0;
 	
 		function mobile()
 		{
@@ -94,20 +99,26 @@
 		function soundinit()
 		{
 			sound[0] = document.createElement("audio"); 
-			sound[0].src = "sound/a.wav";
+			sound[0].src = "sound/Ab4.mp3";
 			sound[1] = document.createElement("audio");
-			sound[1].src = "sound/b.wav";
+			sound[1].src = "sound/C4.mp3";
 			sound[2] = document.createElement("audio");
-			sound[2].src = "sound/c.wav";
+			sound[2].src = "sound/Db4.mp3";
 			sound[3] = document.createElement("audio");
-			sound[3].src = "sound/d.wav";
+			sound[3].src = "sound/E5.mp3";
+			sound[4] = document.createElement("audio");
+			sound[4].src = "sound/B4.mp3";
+			sound[5] = document.createElement("audio");
+			sound[5].src = "sound/Gb4.mp3";
+			sound[6] = document.createElement("audio");
+			sound[6].src = "sound/Eb5.mp3";
 		}
 		
 		function gameProcess()
 		{
 			intervalID = window.setInterval(draw, 1000 / 40);	//setInterval重绘不会阻塞（？）辣！（
 		}
-		
+
 		function modeselect()
 		{
 			initialize();
@@ -117,15 +128,37 @@
 		
 		function m2Select()
 		{
+			mode1 = false;
 			mode2 = true;
+			mode3 = false;
 			document.getElementById("cover2").style.display = "none";
 		}
 		
 		function m1Select()
-		{
+		{	
+			mode1 = true;
 			mode2 = false;
+			mode3 = false;
 			document.getElementById("cover2").style.display = "none";
 		}
+		
+		function m3select()
+		{
+			mode1 = false;
+			mode2 = false;
+			mode3 = true;
+			document.getElementById("cover2").style.display = "none";
+		}
+
+		function gravity(j)
+		{
+				SquareArr[j].velocity = SquareArr[j].velocity + 0.3;
+				SquareArr[j].top1 = SquareArr[j].top1 + SquareArr[j].velocity;
+		}
+		/*
+		模式3的构想：
+		改变黑块的移动方式，使其如同受到重力而下落。
+		*/
 		
 		function addNewSquares()	//加入新块
 		{
@@ -147,7 +180,6 @@
 			var judge = true;
 			for(var i = 0; i < SquareArr.length; i++)
 			{
-				
 				var left1 = (SquareArr[i].column) * xUnit;
 				if(XCoord > left1 && XCoord < left1 + xUnit && YCoord > SquareArr[i].top1 && YCoord < SquareArr[i].top1 + yUnit)
 				{
@@ -156,13 +188,22 @@
 						SquareArr[i].black = false;
 						judge = false;
 						currentScore = currentScore + 1;
-						var j = Math.floor(Math.random() * 4);
-						sound[j].play();
+						sound[soundindex].pause();
+						sound[soundindex].currentTime = 0.0;
+						soundindex = Math.floor(Math.random() * 4);
+						sound[soundindex].play();
 						if(mode2)
 						{
 							if(currentScore >= hiScore2)
 							{
 								hiScore2 = currentScore;
+							}
+						}
+						else if(mode3)
+						{
+							if(currentScore >= hiScore3)
+							{
+								hiScore3 = currentScore;
 							}
 						}
 						else
@@ -172,6 +213,7 @@
 								hiScore1 = currentScore;
 							}
 						}
+						break;
 					}
 					else
 					{
@@ -180,9 +222,13 @@
 						judge = false;
 						document.getElementById("restart").removeAttribute("disabled");
 						document.getElementById("cover").style.display = "block";
-						if(mode2)
+						if(mode2)	
 						{
 							document.getElementById("Score").innerHTML = "当前模式本局分数：" + currentScore + "      最高分数：" + hiScore2;
+						}
+						else if(mode3)
+						{
+							document.getElementById("Score").innerHTML = "当前模式本局分数：" + currentScore + "      最高分数：" + hiScore3;
 						}
 						else
 						{
@@ -200,6 +246,10 @@
 				if(mode2)
 				{
 					document.getElementById("Score").innerHTML = "当前模式本局分数：" + currentScore + "      最高分数：" + hiScore2;
+				}
+				else if(mode3)
+				{
+					document.getElementById("Score").innerHTML = "当前模式本局分数：" + currentScore + "      最高分数：" + hiScore3;
 				}
 				else
 				{
@@ -254,13 +304,21 @@
 				}
 				for(var i = 0; i < SquareArr.length; i++)
 				{
-					SquareArr[i].top1 = SquareArr[i].top1 + speed;					//改变黑块上边的top坐标
-					if(mode2)
+					if(mode1)
 					{
+						SquareArr[i].top1 = SquareArr[i].top1 + speed;					//改变黑块上边的top坐标
+					}
+					else if(mode2)
+					{
+						SquareArr[i].top1 = SquareArr[i].top1 + speed;
 						speed = speed + 0.005;
 					}
-					if(SquareArr[i].top1 >= 4 * yUnit && SquareArr[i].black)
+					else if(mode3)
 					{
+						gravity(i);
+					}
+					if(SquareArr[i].top1 >= 4 * yUnit && SquareArr[i].black)
+					{	
 						document.getElementById("Notice").innerHTML = "黑块漏啦！单击按钮以重新开始游戏";
 						clearInterval(intervalID);
 						document.getElementById("restart").removeAttribute("disabled");
@@ -268,6 +326,10 @@
 						if(mode2)
 						{
 							document.getElementById("Score").innerHTML = "当前模式本局分数：" + currentScore + "      最高分数：" + hiScore2;
+						}
+						else if(mode3)
+						{
+							document.getElementById("Score").innerHTML = "当前模式本局分数：" + currentScore + "      最高分数：" + hiScore3;
 						}
 						else
 						{
@@ -277,7 +339,7 @@
 				}
 			}
 		}
-	
+		
 		//初始化屏幕上一开始就要有的黑块，下标最小的黑块在游戏区域的最下方
 		function initialize()
 		{
