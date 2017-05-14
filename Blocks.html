@@ -24,6 +24,7 @@
 				<p>欢迎游玩！请选择一个模式。</p>
 				<button id="normalmode" onclick="m1Select()">普通模式</button>
 				<button id="speedup" onclick="m2Select()">加速模式</button>
+				<button id="gravity" onclick="m3select()">重力模式</button>
 			</div>
 		</div>
 		<script>
@@ -48,6 +49,7 @@
 		var height2 = 0;
 		var mode2 = false;
 		var speed = 0;
+		var sound = [];
 	
 		function mobile()
 		{
@@ -87,6 +89,18 @@
 			xUnit = document.getElementById("GameZone").offsetWidth / 4;
 		    yUnit = document.getElementById("GameZone").offsetHeight / 4;
 			speed = height2 / 100;
+		}
+		
+		function soundinit()
+		{
+			sound[0] = document.createElement("audio"); 
+			sound[0].src = "sound/a.wav";
+			sound[1] = document.createElement("audio");
+			sound[1].src = "sound/b.wav";
+			sound[2] = document.createElement("audio");
+			sound[2].src = "sound/c.wav";
+			sound[3] = document.createElement("audio");
+			sound[3].src = "sound/d.wav";
 		}
 		
 		function gameProcess()
@@ -142,6 +156,9 @@
 						SquareArr[i].black = false;
 						judge = false;
 						currentScore = currentScore + 1;
+						var j = Math.floor(Math.random() * 4);
+						sound[0].play();
+						console.log(sound[j]);
 						if(mode2)
 						{
 							if(currentScore >= hiScore2)
@@ -246,7 +263,6 @@
 					if(SquareArr[i].top1 >= 4 * yUnit && SquareArr[i].black)
 					{
 						document.getElementById("Notice").innerHTML = "黑块漏啦！单击按钮以重新开始游戏";
-						console.log(mode2,speed);
 						clearInterval(intervalID);
 						document.getElementById("restart").removeAttribute("disabled");
 						document.getElementById("cover").style.display = "block";
@@ -287,6 +303,7 @@
 			mobile();
 			initialize();
 			draw();	
+			soundinit();
 		}
 		</script>
 	</div>
